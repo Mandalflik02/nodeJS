@@ -1,7 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
-const Blog = require('./models/blog');
+const blogRoutes = require('./routes/blogRoutes');
 
 //express app
 const app = express();
@@ -21,46 +21,6 @@ app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
-/*
-//mongoose and mongo sanbox routes
-
-//add new blog
-app.get('/add-blog', (req, res) => {
-    const blog = new Blog({
-        title: 'new blog2',
-        snippet: 'about my new blog',
-        body: 'more about my blog'
-    });
-
-    blog.save()
-        .then((result) => {
-            res.send(result);
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-});
-//find all blog
-app.get('/all-blogs', (req, res) => {
-    Blog.find()
-        .then((result) => {
-            res.send(result);
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-});
-//find singel blog by his id
-app.get('/singel-blog', (req, res) => {
-    Blog.findById("5ff5f8c8dfaa7b0c44646f49")
-        .then((result) => {
-            res.send(result);
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-});
-*/
 
 //routes
 app.get('/', (req, res) => {
@@ -75,31 +35,7 @@ app.get('/about', (req, res) => {
 
 
 //blog routes
-app.get('/blogs', (req, res) => {
-    Blog.find().sort({ createdAt: -1 })
-        .then((result) => {
-            res.render('index', { title: 'All Blogs', blogs: result });
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-});
-app.post('/blogs', (req, res) => {
-    const blog = new Blog(req.body);
-    blog.save()
-        .then((result) => {
-            res.redirect('/blogs');
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-});
-
-app.get('/blogs/create', (req, res) => {
-    res.render('create', { title: "Crate new blog" });
-});
-
-
+app.use('/blogs', blogRoutes);
 
 //404 page
 app.use((req, res) => {
